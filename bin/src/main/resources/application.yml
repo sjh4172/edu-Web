@@ -1,0 +1,33 @@
+server:
+  port: 8001
+  servlet:
+    context-path: /
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+spring:
+  mvc:
+    view:
+      prefix: /WEB-INF/views/
+      suffix: .jsp      
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://database-1.cpu0oqm8wdha.ap-northeast-2.rds.amazonaws.com:3306/b?serverTimezone=Asia/Seoul
+    username: admin
+    password: admin2580!
+    
+  jpa:
+    open-in-view: true
+    hibernate:
+      ddl-auto: update
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+      #use-new-id-generator-mappings: false
+    show-sql: true
+    properties:
+      "[hibernateformat_sql]": true
+
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
