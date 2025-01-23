@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.abroad.baekjunghyunDev.config.auth.PrincipalDetail;
 import com.abroad.baekjunghyunDev.dto.ResponseDto;
 import com.abroad.baekjunghyunDev.model.qna.Reply;
+import com.abroad.baekjunghyunDev.service.SchemaService;
 import com.abroad.baekjunghyunDev.service.qna.QnaReplyService;
 
 @RestController
@@ -29,27 +30,37 @@ public class QnaReplyApiController {
 	
 	@Autowired
 	QnaReplyService replyService;
-	  
-	@PostMapping("/v1/qna/{qnaId}/comment")
-	public ResponseDto<Reply> replySave(@PathVariable int qnaId, @RequestBody Reply reply, @AuthenticationPrincipal PrincipalDetail principal){
-		Reply newReply = replyService.댓글저장(principal.getUser(), qnaId, reply);
-		return new ResponseDto<Reply>(HttpStatus.OK.value(), newReply); 	// 회원가입 결과 Return
+	@Autowired
+	SchemaService schemaService;
+	
+	@PostMapping("/v1/{site}/qna/{qnaId}/comment")
+	public ResponseDto<Reply> replySave(@PathVariable String site, @PathVariable int qnaId, @RequestBody Reply reply, @AuthenticationPrincipal PrincipalDetail principal){
+		if(schemaService.changeSchemaPrincipal(site, principal.getUser()) != false) {
+			Reply newReply = replyService.댓글저장(principal.getUser(), qnaId, reply);
+			return new ResponseDto<Reply>(HttpStatus.OK.value(), newReply); 	// 회원가입 결과 Return
+		}
+		else {
+			return new ResponseDto<Reply>(HttpStatus.UNAUTHORIZED.value(), null); 	// 회원가입 결과 Return
+		}
 	}
 
-	@GetMapping({"/v1/qna/{qnaId}/comment"})
-	public ResponseDto<Page<Reply>> finByBoardIdReply(@PathVariable int qnaId, @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
+	@GetMapping({"/v1/{site}/qna/{qnaId}/comment"})
+	public ResponseDto<Page<Reply>> finByBoardIdReply(@PathVariable String site, @PathVariable int qnaId, @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
+		schemaService.changeSchema(site);
 		Page<Reply> replies = replyService.댓글목록(qnaId, pageable);
 		return new ResponseDto<Page<Reply>>(HttpStatus.OK.value(), replies);
 	}
 
-	@PatchMapping("/v1/qna/{qnaId}/comment/{qnaReplyId}")
-	public ResponseDto<Reply> replyUpdate(@PathVariable int qnaReplyId, @RequestBody Reply reply){
+	@PatchMapping("/v1/{site}/qna/{qnaId}/comment/{qnaReplyId}")
+	public ResponseDto<Reply> replyUpdate(@PathVariable String site, @PathVariable int qnaReplyId, @RequestBody Reply reply){
+		schemaService.changeSchema(site);
 		Reply newReply = replyService.댓글수정(qnaReplyId, reply);
 		return new ResponseDto<Reply>(HttpStatus.OK.value(), newReply);
 	}
 	
-	@DeleteMapping("/v1/qna/{qnaId}/comment/{qnaReplyId}")
-	public ResponseDto<Integer> replyDelete(@PathVariable int qnaReplyId){
+	@DeleteMapping("/v1/{site}/qna/{qnaId}/comment/{qnaReplyId}")
+	public ResponseDto<Integer> replyDelete(@PathVariable String site, @PathVariable int qnaReplyId){
+		schemaService.changeSchema(site);
 		replyService.댓글삭제(qnaReplyId);
 		return new ResponseDto<Integer>(HttpStatus.OK.value(), 1);
 	}

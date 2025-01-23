@@ -33,18 +33,27 @@ public class QnaApiController {
 	
 	@PostMapping("/v1/{site}/qna")
 	public ResponseDto<Board> save(@PathVariable String site, @RequestBody Board board, @AuthenticationPrincipal PrincipalDetail principal){
-        schemaService.changeSchema(site);
-		Board newBoard = boardService.글쓰기(board, principal.getUser());
-		return new ResponseDto<Board>(HttpStatus.OK.value(), newBoard); 
+		if(schemaService.changeSchemaPrincipal(site, principal.getUser()) != false) {
+			Board newBoard = boardService.글쓰기(board, principal.getUser());
+			return new ResponseDto<Board>(HttpStatus.OK.value(), newBoard); 
+		}
+		else {
+			return new ResponseDto<Board>(HttpStatus.UNAUTHORIZED.value(), null);
+		}
 	}
 
-	@GetMapping("/v1/qna/{id}")
-	public ResponseDto<Board> findById(@PathVariable int id) {
-		Board board = boardService.글상세보기(id);
-		return new ResponseDto<Board>(HttpStatus.OK.value(), board);
+	@GetMapping("/v1/{site}/qna/{id}")
+	public ResponseDto<Board> findById(@PathVariable String site, @PathVariable int id, @AuthenticationPrincipal PrincipalDetail principal) {
+		if(schemaService.changeSchemaPrincipal(site, principal.getUser()) != false) {
+			Board board = boardService.글상세보기(id);
+			return new ResponseDto<Board>(HttpStatus.OK.value(), board);
+		}
+		else {
+			return new ResponseDto<Board>(HttpStatus.UNAUTHORIZED.value(), null);
+		}
 	}
 	
-	@GetMapping("/{site}/v1/qna")
+	@GetMapping("/v1/{site}/qna")
 	public ResponseDto<Page<Board>> AllBoard(@PathVariable String site, Model model, @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
         schemaService.changeSchema(site);
 		Page<Board> boards = boardService.글목록(pageable);	
@@ -52,15 +61,16 @@ public class QnaApiController {
 	}
 	
 	
-	@PatchMapping("/v1/qna/{id}")
-	public ResponseDto<Board> update(@PathVariable int id, @RequestBody Board board){
+	@PatchMapping("/v1/{site}/qna/{id}")
+	public ResponseDto<Board> update(@PathVariable String site, @PathVariable int id, @RequestBody Board board){
+		schemaService.changeSchema(site);
 		Board newBoard = boardService.글수정하기(id, board);
 		return new ResponseDto<Board>(HttpStatus.OK.value(), newBoard);
 	}
 	
-	@DeleteMapping("/v1/qna/{id}")
-	public ResponseDto<Integer> delete(@PathVariable int id){
-		System.out.println(id + "/////////////////////////////////////////");
+	@DeleteMapping("/v1/{site}/qna/{id}")
+	public ResponseDto<Integer> delete(@PathVariable String site, @PathVariable int id){
+		schemaService.changeSchema(site);
 		boardService.글삭제하기(id); 
 		return new ResponseDto<Integer>(HttpStatus.OK.value(), id);
 	}

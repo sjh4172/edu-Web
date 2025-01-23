@@ -58,7 +58,7 @@ public class SecurityConfig {
 			cors(cors->cors.configurationSource(corsConfigurationSource())).
 			authorizeHttpRequests(authz->authz.
 					dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll().
-					requestMatchers("/", "/auth/**", "/js/**", "/css/**", "/image/**", "/v1/*/signupProc", "/v1/*/loginProc", "/v1/*/qna","/v1/*/qna", "/v1/*/video", "/v1/*/me").permitAll().
+					requestMatchers("/", "/auth/**", "/js/**", "/css/**", "/image/**", "/v1/*/signupProc", "/v1/*/loginProc", "/v1/*/qna", "/v1/*/video", "/v1/*/me").permitAll().
 					anyRequest().authenticated()).
 			formLogin(formLogin-> formLogin.
 					loginPage("/auth/loginForm").permitAll().

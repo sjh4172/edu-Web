@@ -22,39 +22,55 @@ import com.abroad.baekjunghyunDev.dto.ResponseDto;
 import com.abroad.baekjunghyunDev.model.qna.Board;
 import com.abroad.baekjunghyunDev.model.qna.Reply;
 import com.abroad.baekjunghyunDev.model.video.Video;
+import com.abroad.baekjunghyunDev.service.SchemaService;
 import com.abroad.baekjunghyunDev.service.video.VideoService;
 
 @RestController
 public class VideoApiController {
 	@Autowired
 	VideoService videoService;
-
-	@PostMapping("/v1/video")
-	public ResponseDto<Video> save(@RequestBody Video video, @AuthenticationPrincipal PrincipalDetail principal){
-		Video newVideo = videoService.비디오쓰기(video, principal.getUser());
-		return new ResponseDto<Video>(HttpStatus.OK.value(), newVideo); 	
+	@Autowired
+	SchemaService schemaService;
+	
+	@PostMapping("/v1/{site}/video")
+	public ResponseDto<Video> save(@PathVariable String site, @RequestBody Video video, @AuthenticationPrincipal PrincipalDetail principal){
+		if(schemaService.changeSchemaPrincipal(site, principal.getUser()) != false) {
+			Video newVideo = videoService.비디오쓰기(video, principal.getUser());
+			return new ResponseDto<Video>(HttpStatus.OK.value(), newVideo);
+		}
+		else {
+			return new ResponseDto<Video>(HttpStatus.UNAUTHORIZED.value(), null);
+		}
 	}
 
-	@GetMapping("/v1/video/{id}")
-	public ResponseDto<Video> findById(@PathVariable int id) {
-		Video video = videoService.비디오상세보기(id);
-		return new ResponseDto<Video>(HttpStatus.OK.value(), video);
+	@GetMapping("/v1/{site}/video/{id}")
+	public ResponseDto<Video> findById(@PathVariable String site, @PathVariable int id, @AuthenticationPrincipal PrincipalDetail principal) {
+		if(schemaService.changeSchemaPrincipal(site, principal.getUser()) != false) {
+			Video video = videoService.비디오상세보기(id);
+			return new ResponseDto<Video>(HttpStatus.OK.value(), video);
+		}
+		else {
+			return new ResponseDto<Video>(HttpStatus.UNAUTHORIZED.value(), null);
+		}
 	}
 	
-	@GetMapping({"/v1/video"})
-	public ResponseDto<Page<Video>> finByVideos(@PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+	@GetMapping({"/v1/{site}/video"})
+	public ResponseDto<Page<Video>> finByVideos(@PathVariable String site, @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+		schemaService.changeSchema(site);
 		Page<Video> videos = videoService.비디오목록(pageable);
 		return new ResponseDto<Page<Video>>(HttpStatus.OK.value(), videos);
 	}
 	 
-	@PatchMapping("/v1/video/{id}")
-	public ResponseDto<Video> updateById(@PathVariable int id, @RequestBody Video video){
+	@PatchMapping("/v1/{site}/video/{id}")
+	public ResponseDto<Video> updateById(@PathVariable String site, @PathVariable int id, @RequestBody Video video){
+		schemaService.changeSchema(site);
 		Video newVideo = videoService.비디오수정(id, video);
 		return new ResponseDto<Video>(HttpStatus.OK.value(), newVideo); 	// 회원가입 결과 Return;
 	}
 	
-	@DeleteMapping("/v1/video/{id}")
-	public ResponseDto<Integer> deleteById(@PathVariable int id){
+	@DeleteMapping("/v1/{site}/video/{id}")
+	public ResponseDto<Integer> deleteById(@PathVariable String site, @PathVariable int id){
+		schemaService.changeSchema(site);
 		videoService.비디오삭제(id);
 		return new ResponseDto<Integer>(HttpStatus.OK.value(), id);
 	}

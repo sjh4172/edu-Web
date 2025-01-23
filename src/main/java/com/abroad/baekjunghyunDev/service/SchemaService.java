@@ -4,6 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
+import com.abroad.baekjunghyunDev.model.User;
+import com.abroad.baekjunghyunDev.repository.UserRepository;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
@@ -16,6 +19,8 @@ public class SchemaService {
     SiteService siteService;
     @PersistenceContext
     private EntityManager entityManager;
+    @Autowired
+    UserRepository userRepository;
     
     public SchemaService(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -28,5 +33,20 @@ public class SchemaService {
         String sql = "USE " + schemaName;
         jdbcTemplate.execute(sql);  // SQL 실행
         siteService.saveSite(schemaName);
+    }
+    
+    @Transactional
+    public boolean changeSchemaPrincipal(String schemaName, User user) {
+		siteService.saveSite(schemaName);
+		entityManager.clear();
+        String sql = "USE " + schemaName;
+        jdbcTemplate.execute(sql);  // SQL 실행
+        siteService.saveSite(schemaName);
+        
+        boolean result = false;
+        if(user != null) {
+        	result = userRepository.existsByEmail(user.getEmail());
+        }
+        return result;
     }
 }
