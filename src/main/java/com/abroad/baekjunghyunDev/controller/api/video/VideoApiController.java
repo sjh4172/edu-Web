@@ -62,16 +62,26 @@ public class VideoApiController {
 	}
 	 
 	@PatchMapping("/v1/{site}/video/{id}")
-	public ResponseDto<Video> updateById(@PathVariable String site, @PathVariable int id, @RequestBody Video video){
-		schemaService.changeSchema(site);
-		Video newVideo = videoService.비디오수정(id, video);
-		return new ResponseDto<Video>(HttpStatus.OK.value(), newVideo); 	// 회원가입 결과 Return;
+	public ResponseDto<Video> updateById(@PathVariable String site, @PathVariable int id, @RequestBody Video video, @AuthenticationPrincipal PrincipalDetail principal){
+		if((schemaService.changeSchemaPrincipal(site, principal.getUser()) != false) &&
+				(videoService.회원확인(id, principal.getUser()) != false)) {
+			Video newVideo = videoService.비디오수정(id, video);
+			return new ResponseDto<Video>(HttpStatus.OK.value(), newVideo); 	// 회원가입 결과 Return;
+		}
+		else {
+			return new ResponseDto<Video>(HttpStatus.UNAUTHORIZED.value(), null);
+		}
 	}
 	
 	@DeleteMapping("/v1/{site}/video/{id}")
-	public ResponseDto<Integer> deleteById(@PathVariable String site, @PathVariable int id){
-		schemaService.changeSchema(site);
-		videoService.비디오삭제(id);
-		return new ResponseDto<Integer>(HttpStatus.OK.value(), id);
+	public ResponseDto<Integer> deleteById(@PathVariable String site, @PathVariable int id, @AuthenticationPrincipal PrincipalDetail principal){
+		if((schemaService.changeSchemaPrincipal(site, principal.getUser()) != false) &&
+				(videoService.회원확인(id, principal.getUser()) != false)) {
+			videoService.비디오삭제(id);
+			return new ResponseDto<Integer>(HttpStatus.OK.value(), id);
+		}
+		else {
+			return new ResponseDto<Integer>(HttpStatus.UNAUTHORIZED.value(), 0);
+		}
 	}
 }

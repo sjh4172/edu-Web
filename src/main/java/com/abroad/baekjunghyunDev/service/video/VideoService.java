@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.abroad.baekjunghyunDev.model.User;
+import com.abroad.baekjunghyunDev.model.qna.Board;
 import com.abroad.baekjunghyunDev.model.qna.Reply;
 import com.abroad.baekjunghyunDev.model.video.Video;
 import com.abroad.baekjunghyunDev.repository.video.VideoRepository;
@@ -44,7 +45,7 @@ public class VideoService {
 	public Video 비디오수정(int id, Video video) {
 		Video findVideo = videoRepository.findById(id)
 				.orElseThrow(()->{
-					return new IllegalArgumentException("비디오 상세보기 실패: 아이디를 찾을수 없습니다.");
+					return new IllegalArgumentException("비디오 수정 실패: 아이디를 찾을수 없습니다.");
 				});
 		findVideo.setContent(video.getContent());
 		findVideo.setTitle(video.getTitle());
@@ -57,5 +58,21 @@ public class VideoService {
 	@Transactional
 	public void 비디오삭제(int id) {
 		videoRepository.deleteById(id);
+	}
+	
+
+	@Transactional
+	public boolean 회원확인(int videoId, User user) {
+		Video findVideo = videoRepository.findById(videoId)
+				.orElseThrow(() -> {
+					return new IllegalArgumentException("회원확인 실패: 회원을 찾을수 없습니다.");
+				});
+		
+		if(findVideo.getUser().getEmail().equals(user.getEmail())) {
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 }

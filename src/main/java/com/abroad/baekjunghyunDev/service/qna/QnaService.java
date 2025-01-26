@@ -43,22 +43,36 @@ public class QnaService {
 	}
 	
 	@Transactional
-	public Board 글수정하기(int id, Board board) {
+	public Board 글수정하기(int id, Board board, User user) {
 		Board findBoard = boardRepository.findById(id)
-				.orElseThrow(() -> {
-					return new IllegalArgumentException("글 수정하기 실패: 아이디를 찾을수 없습니다.");
-				});
+					.orElseThrow(() -> {
+						return new IllegalArgumentException("글 수정하기 실패: 아이디를 찾을수 없습니다.");
+					});
 		findBoard.setTitle(board.getTitle());
 		findBoard.setContent(board.getContent());
 		findBoard.setCreatedAt(new Timestamp(System.currentTimeMillis()));
-		System.out.println(board.isPrivate());
 		findBoard.setPrivate(board.isPrivate());
-		
-		return board;
+			
+		return board; 
 	}
 	
 	@Transactional
 	public void 글삭제하기(int id) {
 		boardRepository.deleteById(id);
+	}
+	
+	@Transactional
+	public boolean 회원확인(int boardId, User user) {
+		Board findBoard = boardRepository.findById(boardId)
+				.orElseThrow(() -> {
+					return new IllegalArgumentException("회원확인 실패: 회원을 찾을수 없습니다.");
+				});
+		
+		if(findBoard.getUser().getEmail().equals(user.getEmail())) {
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 }

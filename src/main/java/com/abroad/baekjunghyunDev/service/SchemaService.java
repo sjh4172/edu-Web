@@ -26,6 +26,7 @@ public class SchemaService {
         this.jdbcTemplate = jdbcTemplate;
     }
     
+    // 스키마 변경
     @Transactional
     public void changeSchema(String schemaName) {
 		siteService.saveSite(schemaName);
@@ -35,6 +36,7 @@ public class SchemaService {
         siteService.saveSite(schemaName);
     }
     
+    // 스키마 변경 + User 확인
     @Transactional
     public boolean changeSchemaPrincipal(String schemaName, User user) {
 		siteService.saveSite(schemaName);

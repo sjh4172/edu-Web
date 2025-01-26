@@ -62,17 +62,27 @@ public class QnaApiController {
 	
 	
 	@PatchMapping("/v1/{site}/qna/{id}")
-	public ResponseDto<Board> update(@PathVariable String site, @PathVariable int id, @RequestBody Board board){
-		schemaService.changeSchema(site);
-		Board newBoard = boardService.글수정하기(id, board);
-		return new ResponseDto<Board>(HttpStatus.OK.value(), newBoard);
+	public ResponseDto<Board> update(@PathVariable String site, @PathVariable int id, @RequestBody Board board, @AuthenticationPrincipal PrincipalDetail principal){
+		if((schemaService.changeSchemaPrincipal(site, principal.getUser()) != false) &&
+				(boardService.회원확인(id, principal.getUser()) != false)) {
+			Board newBoard = boardService.글수정하기(id, board, principal.getUser());
+			return new ResponseDto<Board>(HttpStatus.OK.value(), newBoard);
+		}
+		else {
+			return new ResponseDto<Board>(HttpStatus.UNAUTHORIZED.value(), null);
+		}
 	}
 	
 	@DeleteMapping("/v1/{site}/qna/{id}")
-	public ResponseDto<Integer> delete(@PathVariable String site, @PathVariable int id){
-		schemaService.changeSchema(site);
-		boardService.글삭제하기(id); 
-		return new ResponseDto<Integer>(HttpStatus.OK.value(), id);
+	public ResponseDto<Integer> delete(@PathVariable String site, @PathVariable int id, @AuthenticationPrincipal PrincipalDetail principal){
+		if((schemaService.changeSchemaPrincipal(site, principal.getUser()) != false) &&
+				(boardService.회원확인(id, principal.getUser()) != false)) {
+			boardService.글삭제하기(id); 
+			return new ResponseDto<Integer>(HttpStatus.OK.value(), id);
+		}
+		else {
+			return new ResponseDto<Integer>(HttpStatus.UNAUTHORIZED.value(), 0);
+		}
 	}
 
 }
