@@ -70,4 +70,20 @@ public class VideoReplyService {
 	public Page<VideoReply>댓글목록(int videoId, Pageable pageable){
 		return videoReplyRepository.findByVideoId(videoId, pageable);
 	} 
+
+	@Transactional
+	public boolean 회원확인(int videoReplyId, User user) {
+		VideoReply findVideoReply = videoReplyRepository.findById(videoReplyId)
+				.orElseThrow(() -> {
+					return new IllegalArgumentException("댓글을 찾을수 없습니다.");
+				});
+		
+		if(findVideoReply.getUser().getEmail().equals(user.getEmail())) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
 }

@@ -66,5 +66,22 @@ public class QnaReplyService {
 	public Page<Reply>댓글목록(int boardId, Pageable pageable){
 		return replyRepository.findByBoardId(boardId, pageable);
 	} 
+	
+
+	@Transactional
+	public boolean 회원확인(int boardReplyId, User user) {
+		Reply findReply = replyRepository.findById(boardReplyId)
+				.orElseThrow(() -> {
+					return new IllegalArgumentException("댓긋을 찾을수 없습니다.");
+				});
+		
+		if(findReply.getUser().getEmail().equals(user.getEmail())) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	
 	 
 }

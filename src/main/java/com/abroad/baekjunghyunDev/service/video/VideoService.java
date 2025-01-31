@@ -65,7 +65,7 @@ public class VideoService {
 	public boolean 회원확인(int videoId, User user) {
 		Video findVideo = videoRepository.findById(videoId)
 				.orElseThrow(() -> {
-					return new IllegalArgumentException("회원확인 실패: 회원을 찾을수 없습니다.");
+					return new IllegalArgumentException("video를 찾을수 없습니다.");
 				});
 		
 		if(findVideo.getUser().getEmail().equals(user.getEmail())) {

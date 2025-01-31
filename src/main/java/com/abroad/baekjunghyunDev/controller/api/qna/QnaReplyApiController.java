@@ -52,16 +52,26 @@ public class QnaReplyApiController {
 	}
 
 	@PatchMapping("/v1/{site}/qna/{qnaId}/comment/{qnaReplyId}")
-	public ResponseDto<Reply> replyUpdate(@PathVariable String site, @PathVariable int qnaReplyId, @RequestBody Reply reply){
-		schemaService.changeSchema(site);
-		Reply newReply = replyService.댓글수정(qnaReplyId, reply);
-		return new ResponseDto<Reply>(HttpStatus.OK.value(), newReply);
+	public ResponseDto<Reply> replyUpdate(@PathVariable String site, @PathVariable int qnaReplyId, @RequestBody Reply reply, @AuthenticationPrincipal PrincipalDetail principal){
+		if((schemaService.changeSchemaPrincipal(site, principal.getUser()) != false) &&
+				(replyService.회원확인(qnaReplyId, principal.getUser()) != false)) {
+			Reply newReply = replyService.댓글수정(qnaReplyId, reply);
+			return new ResponseDto<Reply>(HttpStatus.OK.value(), newReply);
+		}
+		else {
+			return new ResponseDto<Reply>(HttpStatus.UNAUTHORIZED.value(), null);
+		}
 	}
 	
 	@DeleteMapping("/v1/{site}/qna/{qnaId}/comment/{qnaReplyId}")
-	public ResponseDto<Integer> replyDelete(@PathVariable String site, @PathVariable int qnaReplyId){
-		schemaService.changeSchema(site);
-		replyService.댓글삭제(qnaReplyId);
-		return new ResponseDto<Integer>(HttpStatus.OK.value(), 1);
+	public ResponseDto<Integer> replyDelete(@PathVariable String site, @PathVariable int qnaReplyId, @AuthenticationPrincipal PrincipalDetail principal){
+		if((schemaService.changeSchemaPrincipal(site, principal.getUser()) != false) &&
+				(replyService.회원확인(qnaReplyId, principal.getUser()) != false)) {
+			replyService.댓글삭제(qnaReplyId);
+			return new ResponseDto<Integer>(HttpStatus.OK.value(), qnaReplyId);
+		}
+		else {
+			return new ResponseDto<Integer>(HttpStatus.UNAUTHORIZED.value(), 0);
+		}
 	}
 }

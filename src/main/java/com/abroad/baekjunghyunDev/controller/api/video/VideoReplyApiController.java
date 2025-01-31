@@ -54,16 +54,26 @@ public class VideoReplyApiController {
 	}
 
 	@PatchMapping("/v1/{site}/video/{videoId}/comment/{videoReplyId}")
-	public ResponseDto<VideoReply> vidoeReplyUpdate(@PathVariable String site, @PathVariable int videoReplyId, @RequestBody VideoReply videoReply){
-		schemaService.changeSchema(site);
-		VideoReply newReply = videoReplyService.댓글수정(videoReplyId, videoReply);
-		return new ResponseDto<VideoReply>(HttpStatus.OK.value(), newReply);
+	public ResponseDto<VideoReply> vidoeReplyUpdate(@PathVariable String site, @PathVariable int videoReplyId, @RequestBody VideoReply videoReply, @AuthenticationPrincipal PrincipalDetail principal){
+		if((schemaService.changeSchemaPrincipal(site, principal.getUser()) != false) &&
+				(videoReplyService.회원확인(videoReplyId, principal.getUser()) != false)) {
+			VideoReply newReply = videoReplyService.댓글수정(videoReplyId, videoReply);
+			return new ResponseDto<VideoReply>(HttpStatus.OK.value(), newReply);
+		}
+		else {
+			return new ResponseDto<VideoReply>(HttpStatus.UNAUTHORIZED.value(), null);
+		}
 	}
 	
 	@DeleteMapping("/v1/{site}/video/{videoId}/comment/{videoReplyId}")
-	public ResponseDto<Integer> videoReplyDelete(@PathVariable String site, @PathVariable int videoReplyId){
-		schemaService.changeSchema(site);
-		videoReplyService.댓글삭제(videoReplyId);
-		return new ResponseDto<Integer>(HttpStatus.OK.value(), videoReplyId);
+	public ResponseDto<Integer> videoReplyDelete(@PathVariable String site, @PathVariable int videoReplyId, @AuthenticationPrincipal PrincipalDetail principal){
+		if((schemaService.changeSchemaPrincipal(site, principal.getUser()) != false) &&
+				(videoReplyService.회원확인(videoReplyId, principal.getUser()) != false)) {
+			videoReplyService.댓글삭제(videoReplyId);
+			return new ResponseDto<Integer>(HttpStatus.OK.value(), videoReplyId);
+		}
+		else {
+			return new ResponseDto<Integer>(HttpStatus.UNAUTHORIZED.value(), 0);
+		}
 	}
 }

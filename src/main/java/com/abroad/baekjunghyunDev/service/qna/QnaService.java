@@ -65,7 +65,7 @@ public class QnaService {
 	public boolean 회원확인(int boardId, User user) {
 		Board findBoard = boardRepository.findById(boardId)
 				.orElseThrow(() -> {
-					return new IllegalArgumentException("회원확인 실패: 회원을 찾을수 없습니다.");
+					return new IllegalArgumentException("게시글을 찾을수 없습니다.");
 				});
 		
 		if(findBoard.getUser().getEmail().equals(user.getEmail())) {
