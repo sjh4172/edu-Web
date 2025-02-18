@@ -54,7 +54,7 @@ public class QnaApiController {
 	}
 	
 	@GetMapping("/v1/{site}/qna")
-	public ResponseDto<Page<Board>> AllBoard(@PathVariable String site, Model model, @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+	public ResponseDto<Page<Board>> AllBoard(@PathVariable String site, Model model, @PageableDefault(size = 12, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
         schemaService.changeSchema(site);
 		Page<Board> boards = boardService.글목록(pageable);	
 		return new ResponseDto<Page<Board>>(HttpStatus.OK.value(), boards);

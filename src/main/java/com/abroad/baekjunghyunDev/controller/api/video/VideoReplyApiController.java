@@ -46,7 +46,7 @@ public class VideoReplyApiController {
 	}
 
 	@GetMapping({"/v1/{site}/video/{videoId}/comment"})
-	public ResponseDto<Page<VideoReply>> finByVideodIdVideoReply(@PathVariable String site, @PathVariable int videoId, @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
+	public ResponseDto<Page<VideoReply>> finByVideodIdVideoReply(@PathVariable String site, @PathVariable int videoId, @PageableDefault(size = 12, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
 		schemaService.changeSchema(site);
 		Page<VideoReply> videoReplies = videoReplyService.댓글목록(videoId, pageable);
 	    

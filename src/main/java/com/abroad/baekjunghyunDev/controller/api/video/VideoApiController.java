@@ -55,7 +55,7 @@ public class VideoApiController {
 	}
 	
 	@GetMapping({"/v1/{site}/video"})
-	public ResponseDto<Page<Video>> finByVideos(@PathVariable String site, @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+	public ResponseDto<Page<Video>> finByVideos(@PathVariable String site, @PageableDefault(size = 12, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
 		schemaService.changeSchema(site);
 		Page<Video> videos = videoService.비디오목록(pageable);
 		return new ResponseDto<Page<Video>>(HttpStatus.OK.value(), videos);

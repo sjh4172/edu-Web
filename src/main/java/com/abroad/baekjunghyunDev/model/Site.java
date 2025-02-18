@@ -16,7 +16,13 @@ import lombok.NoArgsConstructor;
 @Entity	// MySql 테이블 자동 생성
 public class Site {
 	@Id
-	private int id;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 	private int siteId; 
 	private String site;
+	
+    public Site(int siteId, String siteValue) {
+    	this.siteId = siteId;
+        this.site = siteValue;
+    }
 }

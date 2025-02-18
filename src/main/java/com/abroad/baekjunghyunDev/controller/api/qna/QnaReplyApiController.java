@@ -45,7 +45,7 @@ public class QnaReplyApiController {
 	}
 
 	@GetMapping({"/v1/{site}/qna/{qnaId}/comment"})
-	public ResponseDto<Page<Reply>> finByBoardIdReply(@PathVariable String site, @PathVariable int qnaId, @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
+	public ResponseDto<Page<Reply>> finByBoardIdReply(@PathVariable String site, @PathVariable int qnaId, @PageableDefault(size = 12, sort = "id", direction = Sort.Direction.ASC) Pageable pageable) {
 		schemaService.changeSchema(site);
 		Page<Reply> replies = replyService.댓글목록(qnaId, pageable);
 		return new ResponseDto<Page<Reply>>(HttpStatus.OK.value(), replies);

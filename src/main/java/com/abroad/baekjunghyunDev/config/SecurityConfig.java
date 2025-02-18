@@ -16,6 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -75,7 +76,7 @@ public class SecurityConfig {
 				        response.getWriter().write("{\"message\":\"로그인 실패\"}");
 				    })) 
 			.logout(logout -> logout
-				    .logoutUrl("/v1/logout")
+				    .logoutUrl("/v1/*/logout")
 				    .invalidateHttpSession(true)
 				    .clearAuthentication(true)
 				    .logoutSuccessHandler((request, response, authentication) -> {
@@ -91,7 +92,9 @@ public class SecurityConfig {
 		
             // SiteExtractorFilter를 Security 필터 체인의 UsernamePasswordAuthenticationFilter 이전에 추가
             http.addFilterBefore(siteExtractorFilter, UsernamePasswordAuthenticationFilter.class);
-
+            http.addFilterBefore(siteExtractorFilter, LogoutFilter.class);         
+            
+            
 		return http.build();
 	}
 	

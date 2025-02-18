@@ -72,7 +72,7 @@ public class QnaReplyService {
 	public boolean 회원확인(int boardReplyId, User user) {
 		Reply findReply = replyRepository.findById(boardReplyId)
 				.orElseThrow(() -> {
-					return new IllegalArgumentException("댓긋을 찾을수 없습니다.");
+					return new IllegalArgumentException("댓글을 찾을수 없습니다.");
 				});
 		
 		if(findReply.getUser().getEmail().equals(user.getEmail())) {
