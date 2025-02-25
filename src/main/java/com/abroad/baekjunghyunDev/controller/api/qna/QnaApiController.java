@@ -84,5 +84,7 @@ public class QnaApiController {
 			return new ResponseDto<Integer>(HttpStatus.UNAUTHORIZED.value(), 0);
 		}
 	}
+	
+	
 
 }

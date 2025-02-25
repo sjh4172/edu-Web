@@ -8,17 +8,24 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.abroad.baekjunghyunDev.model.Access;
 import com.abroad.baekjunghyunDev.model.User;
 import com.abroad.baekjunghyunDev.model.qna.Board;
 import com.abroad.baekjunghyunDev.model.qna.Reply;
 import com.abroad.baekjunghyunDev.model.video.Video;
+import com.abroad.baekjunghyunDev.repository.AccessRepository;
+import com.abroad.baekjunghyunDev.repository.UserRepository;
 import com.abroad.baekjunghyunDev.repository.video.VideoRepository;
 
 @Service
 public class VideoService {
 	@Autowired
 	VideoRepository videoRepository;
-
+	@Autowired
+	AccessRepository accessRepository;
+	@Autowired
+	UserRepository userRepository;
+	
 	@Transactional(readOnly = true) 
 	public Page<Video> 비디오목록(Pageable pageable){
 		return videoRepository.findAll(pageable);
@@ -29,6 +36,13 @@ public class VideoService {
 		video.setUser(user);
 		video.setPrivate(false);
 		videoRepository.save(video);
+		
+		// video 를 생성한 사용자는 시청 가능하도록 설정
+		Access access = Access.builder()
+                .user(user)
+                .video(video)
+                .build(); 
+		accessRepository.save(access);
 		
 		return video;
 	}
@@ -75,4 +89,14 @@ public class VideoService {
 			return false;
 		}
 	}
+	
+	public boolean 시청권한확인(User user, int videoId) {
+		Video findVideo = videoRepository.findById(videoId)
+				.orElseThrow(() -> {
+					return new IllegalArgumentException("video를 찾을수 없습니다.");
+				});
+		
+		return accessRepository.existsByUserAndVideo(user, findVideo);
+	}
+
 }

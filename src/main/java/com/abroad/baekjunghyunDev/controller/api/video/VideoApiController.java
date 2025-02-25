@@ -46,8 +46,15 @@ public class VideoApiController {
 	@GetMapping("/v1/{site}/video/{id}")
 	public ResponseDto<Video> findById(@PathVariable String site, @PathVariable int id, @AuthenticationPrincipal PrincipalDetail principal) {
 		if(schemaService.changeSchemaPrincipal(site, principal.getUser()) != false) {
-			Video video = videoService.비디오상세보기(id);
-			return new ResponseDto<Video>(HttpStatus.OK.value(), video);
+			boolean hasAccess = videoService.시청권한확인(principal.getUser(), id);
+			
+		    if (!hasAccess) {
+		        return new ResponseDto<>(HttpStatus.FORBIDDEN.value(), null); // 권한 없음 (403)
+		    }
+		    else {
+				Video video = videoService.비디오상세보기(id);
+				return new ResponseDto<Video>(HttpStatus.OK.value(), video);
+		    }
 		}
 		else {
 			return new ResponseDto<Video>(HttpStatus.UNAUTHORIZED.value(), null);
@@ -84,4 +91,6 @@ public class VideoApiController {
 			return new ResponseDto<Integer>(HttpStatus.UNAUTHORIZED.value(), 0);
 		}
 	}
+	
+	
 }
