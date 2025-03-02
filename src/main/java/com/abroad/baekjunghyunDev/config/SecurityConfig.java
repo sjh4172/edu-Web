@@ -110,9 +110,7 @@ public class SecurityConfig {
         		"http://localhost:4003",
         		"http://localhost:4004",
         		"http://localhost:4005",
-        		"https://baekjeonghyeon.abroad0213.com",
-        		"https://baekjeonghyun.abroad0213.com",
-        		"https://baekjunghyun.abroad0213.com"
+        		"https://*.abroad0213.com"
         		)); 
         //configuration.setAllowedOriginPatterns(Collections.singletonList("https://*.abroad0213.com"));
 

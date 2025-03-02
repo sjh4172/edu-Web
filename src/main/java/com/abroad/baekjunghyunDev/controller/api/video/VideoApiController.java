@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -42,25 +43,28 @@ public class VideoApiController {
 			return new ResponseDto<Video>(HttpStatus.UNAUTHORIZED.value(), null);
 		}
 	}
-
 	@GetMapping("/v1/{site}/video/{id}")
-	public ResponseDto<Video> findById(@PathVariable String site, @PathVariable int id, @AuthenticationPrincipal PrincipalDetail principal) {
-		if(schemaService.changeSchemaPrincipal(site, principal.getUser()) != false) {
-			boolean hasAccess = videoService.시청권한확인(principal.getUser(), id);
-			
-		    if (!hasAccess) {
-		        return new ResponseDto<>(HttpStatus.FORBIDDEN.value(), null); // 권한 없음 (403)
-		    }
-		    else {
-				Video video = videoService.비디오상세보기(id);
-				return new ResponseDto<Video>(HttpStatus.OK.value(), video);
-		    }
-		}
-		else {
-			return new ResponseDto<Video>(HttpStatus.UNAUTHORIZED.value(), null);
-		}
+	public ResponseEntity<ResponseDto<Video>> findById(
+	        @PathVariable String site, 
+	        @PathVariable int id, 
+	        @AuthenticationPrincipal PrincipalDetail principal) {
+	    
+	    if (!schemaService.changeSchemaPrincipal(site, principal.getUser())) {
+	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+	                .body(new ResponseDto<>(HttpStatus.UNAUTHORIZED.value(), null));
+	    }
+
+	    boolean hasAccess = videoService.시청권한확인(principal.getUser(), id);
+	    
+	    if (!hasAccess) {
+	        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+	                .body(new ResponseDto<>(HttpStatus.FORBIDDEN.value(), null));
+	    }
+
+	    Video video = videoService.비디오상세보기(id);
+	    return ResponseEntity.ok(new ResponseDto<>(HttpStatus.OK.value(), video));
 	}
-	
+
 	@GetMapping({"/v1/{site}/video"})
 	public ResponseDto<Page<Video>> finByVideos(@PathVariable String site, @PageableDefault(size = 12, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
 		schemaService.changeSchema(site);

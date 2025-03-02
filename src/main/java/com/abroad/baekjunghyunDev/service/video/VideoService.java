@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.abroad.baekjunghyunDev.model.Access;
+import com.abroad.baekjunghyunDev.model.RoleType;
 import com.abroad.baekjunghyunDev.model.User;
 import com.abroad.baekjunghyunDev.model.qna.Board;
 import com.abroad.baekjunghyunDev.model.qna.Reply;
@@ -95,8 +96,12 @@ public class VideoService {
 				.orElseThrow(() -> {
 					return new IllegalArgumentException("video를 찾을수 없습니다.");
 				});
-		
-		return accessRepository.existsByUserAndVideo(user, findVideo);
+		if(user.getRole() != RoleType.ADMIN) {
+			return accessRepository.existsByUserAndVideo(user, findVideo);
+		}
+		else {
+			return true;
+		}
 	}
 
 }
