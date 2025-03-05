@@ -49,6 +49,24 @@ public class VideoService {
 	}
 	
 	@Transactional
+	public Video S3비디오쓰기(Video video, User user) {
+		video.setUser(user);
+		video.setPrivate(false);
+		video.setUrl("null");
+		
+		videoRepository.save(video);
+		
+		// video 를 생성한 사용자는 시청 가능하도록 설정
+		Access access = Access.builder()
+                .user(user)
+                .video(video)
+                .build(); 
+		accessRepository.save(access);
+		
+		return video;
+	}
+	
+	@Transactional
 	public Video 비디오상세보기(int id) {
 		return videoRepository.findById(id)
 				.orElseThrow(()->{

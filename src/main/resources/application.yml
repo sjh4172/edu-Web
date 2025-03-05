@@ -6,6 +6,13 @@ server:
       charset: UTF-8
       enabled: true
       force: true
+    session:
+      cookie:
+        domain:
+        same-site: LAX
+        secure: true
+
+
 spring:
   mvc:
     view:
@@ -13,7 +20,7 @@ spring:
       suffix: .jsp      
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://database-1.cpu0oqm8wdha.ap-northeast-2.rds.amazonaws.com:3306/test?serverTimezone=Asia/Seoul
+    url: jdbc:mysql://database-1.cpu0oqm8wdha.ap-northeast-2.rds.amazonaws.com:3306/baekjunghyun?serverTimezone=Asia/Seoul
     username: admin
     password: admin2580!
     
@@ -31,3 +38,16 @@ spring:
   jackson:
     serialization:
       fail-on-empty-beans: false
+
+  cloud:
+    aws:
+      region:
+        static: ap-northeast-2
+
+
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 1024MB
+      max-request-size: 1024MB
+        
