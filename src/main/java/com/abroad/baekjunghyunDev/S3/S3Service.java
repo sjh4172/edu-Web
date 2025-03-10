@@ -39,18 +39,14 @@ public class S3Service {
 
     @Transactional
     // 파일 업로드 메서드
-    public Video uploadFile(String bucketName, String key, InputStream inputStream) {
+    public String uploadFile(String bucketName, String key, InputStream inputStream) {
         try {
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentLength(inputStream.available());  // 파일 크기 설정
             amazonS3.putObject(bucketName, key, inputStream, metadata);
               
-            Video findVideo = videoRepository.findById(videoRepository.findMaxId())
-            		.orElseThrow(()->{
-				return new IllegalArgumentException("비디오 수정 실패: 아이디를 찾을수 없습니다.");
-			});
-            findVideo.setUrl(amazonS3.getUrl(bucketName, key).toString());
-            return findVideo;
+            return amazonS3.getUrl(bucketName, key).toString();
+            
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Error uploading file to S3: " + e.getMessage());

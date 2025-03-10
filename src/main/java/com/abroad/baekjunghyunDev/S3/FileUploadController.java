@@ -30,32 +30,30 @@ public class FileUploadController {
     private S3Service s3Service;
     @Autowired
     private SchemaService schemaService;
-    @Autowired
-    private VideoService videoService;
  
     @PostMapping("/v1/{site}/upload/file")
-    public ResponseDto<Video> uploadFile(@PathVariable String site, @RequestParam("file") MultipartFile file) throws IOException {
+    public ResponseDto<String> uploadFile(@PathVariable String site, @RequestParam("file") MultipartFile file) throws IOException {
     	schemaService.changeSchema(site);
         String bucketName = "abroad-b";  // 업로드할 S3 버킷 이름
         String key = file.getOriginalFilename();  // 파일 이름
         
         // S3에 파일 업로드
-        Video findVideo = s3Service.uploadFile(bucketName, key, file.getInputStream());
+        String videoUrl = s3Service.uploadFile(bucketName, key, file.getInputStream());
         
-        return new ResponseDto<Video>(HttpStatus.OK.value(), findVideo);
+        return new ResponseDto<String>(HttpStatus.OK.value(), videoUrl);
     }
-    
-    @PostMapping("/v1/{site}/upload/content")
-    public ResponseDto<Video> uploadContent(@PathVariable String site, @RequestBody Video video, @AuthenticationPrincipal PrincipalDetail principal){
-		if(schemaService.changeSchemaPrincipal(site, principal.getUser()) != false) {
-			Video newVideo = videoService.S3비디오쓰기(video, principal.getUser());
-			return new ResponseDto<Video>(HttpStatus.OK.value(), newVideo);
-		}
-		else {
-			return new ResponseDto<Video>(HttpStatus.UNAUTHORIZED.value(), null);
-		}
-    }
-    
+//    
+//    @PostMapping("/v1/{site}/upload/content")
+//    public ResponseDto<Video> uploadContent(@PathVariable String site, @RequestBody Video video, @AuthenticationPrincipal PrincipalDetail principal){
+//		if(schemaService.changeSchemaPrincipal(site, principal.getUser()) != false) {
+//			Video newVideo = videoService.S3비디오쓰기(video, principal.getUser());
+//			return new ResponseDto<Video>(HttpStatus.OK.value(), newVideo);
+//		}
+//		else {
+//			return new ResponseDto<Video>(HttpStatus.UNAUTHORIZED.value(), null);
+//		}
+//    }
+//    
     
     @GetMapping("/v1/{site}/file/download/{fileName}")
     public void downloadFile(@PathVariable String fileName, HttpServletResponse response) {

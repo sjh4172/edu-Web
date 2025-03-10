@@ -44,7 +44,6 @@ spring:
       region:
         static: ap-northeast-2
 
-
   servlet:
     multipart:
       enabled: true
