@@ -84,8 +84,9 @@ public class VideoService {
 		findVideo.setTitle(video.getTitle());
 		findVideo.setCreatedAt(new Timestamp(System.currentTimeMillis()));
 		findVideo.setPrivate(video.isPrivate());
+		findVideo.setUrl(video.getUrl());
 		
-		return video;
+		return findVideo;
 	}
 	
 	@Transactional

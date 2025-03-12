@@ -59,7 +59,7 @@ public class QnaReplyService {
 		findReply.setContent(reply.getContent());
 		findReply.setCreatedAt(new Timestamp(System.currentTimeMillis()));
 		
-		return reply;
+		return findReply;
 	}
 	 
 	@Transactional(readOnly = true)

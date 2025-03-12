@@ -53,7 +53,7 @@ public class QnaService {
 		findBoard.setCreatedAt(new Timestamp(System.currentTimeMillis()));
 		findBoard.setPrivate(board.isPrivate());
 			
-		return board; 
+		return findBoard; 
 	}
 	
 	@Transactional

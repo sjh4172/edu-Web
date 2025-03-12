@@ -63,7 +63,7 @@ public class VideoReplyService {
 		findVideoReply.setContent(videoReply.getContent());
 		findVideoReply.setCreatedAt(new Timestamp(System.currentTimeMillis()));
 		
-		return videoReply;
+		return findVideoReply;
 	}
 	  
 	@Transactional(readOnly = true)
